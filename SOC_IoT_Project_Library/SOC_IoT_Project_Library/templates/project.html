@@ -1,0 +1,12 @@
+{% extends "base.html" %}{% block title %}{{ project.title }} | SOC{% endblock %}{% block content %}
+<a class="back" href="{{ url_for('home') }}">← All projects</a><section class="detailhead"><div><small>SOC PROJECT GUIDE</small><h1>{{ project.title }}</h1><p>{{ project.summary }}</p></div>{% if project.image %}<img src="{{ url_for('static',filename='uploads/'+project.image) }}" alt="{{ project.title }}">{% endif %}</section>
+<div class="details">
+<section><h2>1. Introduction & Objective</h2><p>{{ project.objective or 'Not added yet.' }}</p></section>
+<section><h2>2. Equipment Required</h2>{% if project.equipment %}<ul>{% for x in project.equipment %}<li>{{ x }}</li>{% endfor %}</ul>{% else %}<p>Not added yet.</p>{% endif %}</section>
+<section class="wide"><h2>3. Circuit Diagram</h2>{% if project.diagram %}<img class="diagram" src="{{ url_for('static',filename='uploads/'+project.diagram) }}" alt="Circuit diagram">{% else %}<p>Diagram not uploaded yet.</p>{% endif %}</section>
+<section><h2>4. Pin-to-Pin Connections</h2>{% if project.connections %}<ul>{% for x in project.connections %}<li>{{ x }}</li>{% endfor %}</ul>{% else %}<p>Not added yet.</p>{% endif %}</section>
+<section><h2>5. Working Principle</h2><p>{{ project.working or 'Not added yet.' }}</p></section>
+<section class="wide"><div class="codehead"><h2>6. Source Code</h2><button class="btn secondary" onclick="navigator.clipboard.writeText(document.getElementById('code').innerText).then(()=>alert('Code copied!'))">Copy code</button></div><pre id="code">{{ project.code or 'No code added yet.' }}</pre></section>
+<section><h2>7. Applications</h2><p>{{ project.applications or 'Not added yet.' }}</p></section><section><h2>8. Precautions</h2><p>{{ project.precautions or 'Not added yet.' }}</p></section>
+<section class="wide notes"><h2>Teaching Notes</h2><p>{{ project.teaching_notes or 'Not added yet.' }}</p></section></div>
+{% if session.get('admin') %}<p><a class="btn secondary" href="{{ url_for('edit',pid=project.id) }}">Edit project</a></p>{% endif %}{% endblock %}
