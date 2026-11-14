@@ -1,5 +1,0 @@
-{% extends "base.html" %}{% block title %}IoT Projects | SOC{% endblock %}{% block content %}
-<section class="hero"><small>SCHOOL OF COMPUTER</small><h1>Explore IoT Projects</h1><p>Practical project guides for sensors, microcontrollers, electronics and automation.</p></section>
-<div class="heading"><div><h2>All Projects</h2><p>{{ projects|length }} project(s) available</p></div></div>
-{% if projects %}<div class="grid">{% for p in projects %}<a class="card" href="{{ url_for('detail',pid=p.id) }}">{% if p.image %}<img src="{{ url_for('static',filename='uploads/'+p.image) }}" alt="{{ p.title }}">{% else %}<div class="placeholder">SOC <small>IOT PROJECT</small></div>{% endif %}<div class="inside"><h3>{{ p.title }}</h3><p>{{ p.summary or p.objective or 'Open to view the complete project guide.' }}</p><strong>View project →</strong></div></a>{% endfor %}</div>
-{% else %}<div class="empty"><h2>No projects added yet</h2><p>Admin can sign in and add the first IoT project.</p><a class="btn" href="{{ url_for('login') }}">Admin Login</a></div>{% endif %}{% endblock %}
