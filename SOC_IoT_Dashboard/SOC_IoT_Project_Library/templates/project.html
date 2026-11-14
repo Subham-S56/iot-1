@@ -1,0 +1,39 @@
+{% extends "base.html" %}{% block title %}{{ project.title }} | SOC{% endblock %}{% block content %}
+<a class="back" href="{{ url_for('home') }}">← All projects</a><section class="detailhead"><div><small>SOC PROJECT GUIDE</small><h1>{{ project.title }}</h1><p>{{ project.summary }}</p></div>{% if project.image %}<img src="{{ url_for('static',filename='uploads/'+project.image) }}" alt="{{ project.title }}">{% endif %}</section>
+<div class="details">
+<section><h2>1. Introduction & Objective</h2><p>{{ project.objective or 'Not added yet.' }}</p></section>
+<section class="equipment-section"><h2>2. Equipment Required</h2>{% if project.equipment %}<div class="equipment-layout"><div class="equipment-list" aria-label="Equipment list">{% for x in project.equipment %}<button type="button" class="equipment-item{% if loop.first %} active{% endif %}" data-name="{{ x|e }}" data-image="{% if project.equipment_images and project.equipment_images.get(x) %}{{ url_for('static',filename='uploads/'+project.equipment_images.get(x)) }}{% endif %}">{{ x }} <span>View photo →</span></button>{% endfor %}</div><div class="equipment-preview" aria-live="polite"><div class="equipment-placeholder" id="equipment-placeholder">Select an equipment name to view its photo</div><img id="equipment-photo" alt="Selected equipment" hidden><strong id="equipment-caption">{{ project.equipment[0] }}</strong></div></div>{% else %}<p>Not added yet.</p>{% endif %}<a class="btn arduino-btn" href="https://app.arduino.cc/sketches" target="_blank" rel="noopener noreferrer">Open Arduino IDE <span aria-hidden="true">↗</span></a></section>
+<section class="wide"><h2>3. Circuit Diagram</h2>{% if project.diagram %}<img class="diagram" src="{{ url_for('static',filename='uploads/'+project.diagram) }}" alt="Circuit diagram">{% else %}<p>Diagram not uploaded yet.</p>{% endif %}</section>
+<section><h2>4. Pin-to-Pin Connections</h2>{% if project.connections %}<ul>{% for x in project.connections %}<li>{{ x }}</li>{% endfor %}</ul>{% else %}<p>Not added yet.</p>{% endif %}</section>
+<section><h2>5. Working Principle</h2><p>{{ project.working or 'Not added yet.' }}</p></section>
+<section class="wide"><div class="codehead"><h2>6. Source Code</h2><button class="btn secondary" onclick="navigator.clipboard.writeText(document.getElementById('code').innerText).then(()=>alert('Code copied!'))">Copy code</button></div><pre id="code">{{ project.code or 'No code added yet.' }}</pre></section>
+<section><h2>7. Applications</h2><p>{{ project.applications or 'Not added yet.' }}</p></section><section><h2>8. Precautions</h2><p>{{ project.precautions or 'Not added yet.' }}</p></section>
+<section class="wide notes"><h2>Teaching Notes</h2><p>{{ project.teaching_notes or 'Not added yet.' }}</p></section></div>
+{% if session.get('admin') %}<p><a class="btn secondary" href="{{ url_for('edit',pid=project.id) }}">Edit project</a></p>{% endif %}
+<script>
+(() => {
+  const buttons = [...document.querySelectorAll('.equipment-item')];
+  const photo = document.getElementById('equipment-photo');
+  const placeholder = document.getElementById('equipment-placeholder');
+  const caption = document.getElementById('equipment-caption');
+  if (!buttons.length || !photo || !placeholder || !caption) return;
+  function showEquipment(button) {
+    buttons.forEach(item => { item.classList.toggle('active', item === button); item.setAttribute('aria-pressed', item === button ? 'true' : 'false'); });
+    caption.textContent = button.dataset.name || '';
+    const imageUrl = button.dataset.image;
+    photo.hidden = true; photo.removeAttribute('src');
+    if (!imageUrl) {
+      placeholder.hidden = false;
+      placeholder.textContent = 'No photo uploaded for this equipment yet.';
+      return;
+    }
+    placeholder.hidden = false; placeholder.textContent = 'Loading equipment photo…';
+    photo.onload = () => { photo.hidden = false; placeholder.hidden = true; };
+    photo.onerror = () => { photo.hidden = true; placeholder.hidden = false; placeholder.textContent = 'This photo could not be loaded. Please ask an admin to upload it again.'; };
+    photo.src = imageUrl;
+  }
+  buttons.forEach(button => button.addEventListener('click', () => showEquipment(button)));
+  showEquipment(buttons[0]);
+})();
+</script>
+{% endblock %}

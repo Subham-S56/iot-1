@@ -1,0 +1,41 @@
+{% extends "base.html" %}{% block title %}{{ page_title }} | SOC{% endblock %}{% block content %}<a class="back" href="{{ url_for('admin') }}">← Back to admin</a><div class="formwrap"><small>PROJECT CONTENT</small><h1>{{ page_title }}</h1><p>Use one line per equipment item and connection.</p><form method="post" enctype="multipart/form-data">
+<label>Project title *<input name="title" required value="{{ project.title if project else '' }}"></label>
+<label>Short description<textarea name="summary" rows="2">{{ project.summary if project else '' }}</textarea></label>
+<label>Introduction and objective<textarea name="objective" rows="4">{{ project.objective if project else '' }}</textarea></label>
+<label>Equipment required <em>One item per line; include quantity. Add equipment names first, then choose a photo for each item below.</em><textarea id="equipment-input" name="equipment" rows="5">{{ project.equipment|join('\n') if project else '' }}</textarea></label>
+<div class="equipment-upload-area"><strong>Equipment photos</strong><em>Each photo is linked to its own equipment item. Leave an item without a photo, and existing photos stay saved unless replaced.</em><div id="equipment-photo-fields"></div></div>
+<div class="twocol"><label>Project photo<input type="file" name="image" accept=".png,.jpg,.jpeg,.gif,.webp">{% if project and project.image %}<em>Current: {{ project.image }}</em>{% endif %}</label><label>Circuit diagram<input type="file" name="diagram" accept=".png,.jpg,.jpeg,.gif,.webp">{% if project and project.diagram %}<em>Current: {{ project.diagram }}</em>{% endif %}</label></div>
+<label>Pin-to-pin connections <em>One connection per line.</em><textarea name="connections" rows="5">{{ project.connections|join('\n') if project else '' }}</textarea></label>
+<label>Working principle<textarea name="working" rows="5">{{ project.working if project else '' }}</textarea></label>
+<label>Source code<textarea class="codeinput" name="code" rows="12" spellcheck="false">{{ project.code if project else '' }}</textarea></label>
+<label>Applications<textarea name="applications" rows="3">{{ project.applications if project else '' }}</textarea></label>
+<label>Precautions<textarea name="precautions" rows="3">{{ project.precautions if project else '' }}</textarea></label>
+<label>Teaching notes<textarea name="teaching_notes" rows="4" placeholder="Common mistakes, troubleshooting and questions for students.">{{ project.teaching_notes if project else '' }}</textarea></label>
+<div class="actions"><button class="btn">Save Project</button><a class="btn secondary" href="{{ url_for('admin') }}">Cancel</a></div></form></div>
+<script>
+(() => {
+  const equipmentInput = document.getElementById('equipment-input');
+  const fields = document.getElementById('equipment-photo-fields');
+  const saved = {{ (project.equipment_images if project and project.equipment_images else {})|tojson }};
+  const uploadBase = {{ url_for('static', filename='uploads/')|tojson }};
+  function renderEquipmentPhotoFields() {
+    const names = equipmentInput.value.split('\n').map(x => x.trim()).filter(Boolean);
+    const previous = new Map();
+    fields.querySelectorAll('input[type=file]').forEach(input => previous.set(input.dataset.item, input));
+    fields.replaceChildren();
+    names.forEach((name, index) => {
+      const row = document.createElement('div'); row.className = 'equipment-upload-row';
+      const label = document.createElement('label'); label.textContent = name;
+      const input = document.createElement('input'); input.type = 'file'; input.name = 'equipment_image_' + index;
+      input.accept = '.png,.jpg,.jpeg,.gif,.webp'; input.dataset.item = name;
+      const oldInput = previous.get(name); if (oldInput && oldInput.files.length) input.files = oldInput.files;
+      label.appendChild(input); row.appendChild(label);
+      const status = document.createElement('span'); status.className = 'saved-photo';
+      status.textContent = saved[name] ? 'Current photo: ' + saved[name] : 'No photo saved yet'; row.appendChild(status);
+      if (saved[name]) { const preview = document.createElement('img'); preview.src = uploadBase + encodeURIComponent(saved[name]); preview.alt = 'Current photo of ' + name; preview.onerror = () => preview.hidden = true; row.appendChild(preview); }
+      fields.appendChild(row);
+    });
+  }
+  equipmentInput.addEventListener('input', renderEquipmentPhotoFields); renderEquipmentPhotoFields();
+})();
+</script>{% endblock %}

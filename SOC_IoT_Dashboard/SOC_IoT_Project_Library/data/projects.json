@@ -1,0 +1,28 @@
+[
+  {
+    "id": "255239481389",
+    "title": "Object Detector",
+    "summary": "When object comes close, it gives alert using sound and light.”",
+    "objective": "USE :- Detect the distance of object",
+    "equipment": [
+      "Arduino Uno",
+      "Ultrasonic sensor",
+      "Buzzer",
+      "Led"
+    ],
+    "equipment_images": {
+      "Arduino Uno": "61410492f027_uno.webp",
+      "Ultrasonic sensor": "f4f956007c0b_sen.webp",
+      "Buzzer": "009b416af61a_obj.webp",
+      "Led": "c61443fb9148_led1.webp"
+    },
+    "image": "b7f6f15ea7d9_sen.webp",
+    "diagram": "4ec648e7eabe_cir_pic.jpeg",
+    "connections": [],
+    "working": "",
+    "code": "",
+    "applications": "",
+    "precautions": "",
+    "teaching_notes": ""
+  }
+]
